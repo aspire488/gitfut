@@ -105,9 +105,17 @@ describe("signalsFromPayload — active years", () => {
     expect(s.active_years).toBe(3);
   });
 
-  it("does not invent an active year when an annual contribution window is missing", () => {
+  it("does not count a year with zero contributions as active", () => {
     const s = signalsFromPayload(
       payload({ years: [{ year: 2026, commits: 0, prs: 0, reviews: 0, issues: 0, restricted: 0 }] }),
+      NOW,
+    );
+    expect(s.active_years).toBe(0);
+  });
+
+  it("counts private-only contribution years as active", () => {
+    const s = signalsFromPayload(
+      payload({ years: [{ year: 2024, commits: 0, prs: 0, reviews: 0, issues: 0, restricted: 3 }] }),
       NOW,
     );
     expect(s.active_years).toBe(1);
