@@ -25,7 +25,10 @@ export function signalsFromPayload(p: RawPayload, now = Date.now()): Signals {
   // years. Repository creation/push dates only cover repos the user owns and
   // therefore miss organization-owned, private, and contribution-only activity.
   // A failed/missing year remains absent rather than being fabricated as active.
-  const active_years = p.years?.length ?? 0;
+  const active_years =
+    p.years?.filter(
+      (year) => year.commits + year.prs + year.reviews + year.issues + year.restricted > 0,
+    ).length ?? 0;
 
   // Recent activity over the last year: every contribution type GitHub exposes,
   // including the private (restricted) count, so it matches the profile graph.
